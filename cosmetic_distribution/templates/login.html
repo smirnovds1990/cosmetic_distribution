@@ -1,30 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
-    <style>
-        h1{
-          color: green;
-          }
-    </style>
-  </head>
-  <body>
-    <nav>
-      <ul>
-        <li><a href="/login">Login</a></li>
-        <li><a href="/register">Create account</a></li>
-      </ul>
-    </nav>
-    <h1>Login to your account</h1>
-    <form action="#" method="post">
-      <label for="username">Username:</label>
-      <input type="text" name="username" />
-      <label for="password">Password:</label>
-      <input type="password" name="password" />
-      <button type="submit">Submit</button>
+{% extends 'base.html' %}
+{% block content %}
+  <main class="form-signin m-auto">
+    <form class="text-center" method="post" action="{{ url_for('login') }}">
+      <h1 class="h3 mb-3 fw-normal">Авторизируйтесь</h1>
+      <div class="form-floating">
+        <input type="text" class="form-control" id="floatingInput" name="username" />
+        <label for="floatingInput">Имя пользователя</label>
+      </div>
+      <div class="form-floating mt-3">
+        <input type="password" class="form-control" id="floatingPassword" name="password" />
+        <label for="floatingPassword">Пароль</label>
+      </div>
+      <button class="btn btn-primary mt-3 py-2" type="submit">Войти</button>
+      <div class="form-floating mt-3">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul>
+              {% for message in messages %}
+                <span style="color: red">{{ message }}</span>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+      </div>
     </form>
-  </body>
-</html>
+  </main>
+{% endblock %}
