@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-  <main class="form-signin m-auto">
+  <main class="position-absolute top-50 start-50 translate-middle">
     <form class="text-center" method="post" action="{{ url_for('register') }}">
-      <h1 class="h3 mb-3 fw-normal">Зарегистрироваться</h1>
+      <h1 class="h3 mb-3 mt-3">Зарегистрироваться</h1>
       <div class="form-floating">
         <input type="text" class="form-control" id="floatingInput" name="username" />
         <label for="floatingInput">Имя пользователя</label>

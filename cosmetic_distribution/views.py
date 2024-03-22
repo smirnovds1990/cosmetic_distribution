@@ -1,5 +1,5 @@
 from flask import flash, redirect, render_template, request, url_for
-from flask_login import login_user, logout_user
+from flask_login import login_required, login_user, logout_user
 # from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash
 # from werkzeug.security import generate_password_hash
@@ -37,12 +37,14 @@ def loader_user(user_id):
 
 
 @app.route("/logout")
+@login_required
 def logout():
     logout_user()
     return redirect(url_for("login"))
 
 
 @app.route("/home")
+@login_required
 def home():
     return render_template("home.html")
 

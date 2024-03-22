@@ -13,4 +13,4 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 migrate = Migrate(app, db)
 
-from . import models, views
+from . import error_handlers, models, views

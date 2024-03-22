@@ -1,20 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
-    <style>
-      h1 {
-        color: green;
-      }
-    </style>
-  </head>
-  <body>
-    <nav>
-      Домашняя страница
-    </nav>
-    <a href="/logout">Logout</a>
-  </body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+  <div class="position-absolute top-50 start-50 translate-middle">
+    <div>Складские остатки</div>
+  </div>
+{% endblock %}
