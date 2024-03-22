@@ -10,6 +10,7 @@
   <body class="d-flex align-items-center py-4 bg-body-tertiary" data-new-gr-c-s-check-loaded="14.1162.0" data-gr-ext-installed="">
     <main class="position-absolute top-50 start-50 translate-middle">
       <form class="text-center" method="post" action="{{ url_for('login') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <h1 class="h3 mb-3 mt-3">Авторизируйтесь</h1>
         <div class="form-floating">
           <input type="text" class="form-control" id="floatingInput" name="username" />
@@ -19,7 +20,7 @@
           <input type="password" class="form-control" id="floatingPassword" name="password" />
           <label for="floatingPassword">Пароль</label>
         </div>
-        <button class="btn btn-primary mt-3 py-2" type="submit">Войти</button>
+        <button class="btn btn-secondary mt-3 py-2" type="submit">Войти</button>
         <div class="form-floating mt-3">
           {% with messages = get_flashed_messages() %}
             {% if messages %}

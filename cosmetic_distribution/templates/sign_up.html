@@ -2,6 +2,7 @@
 {% block content %}
   <main class="position-absolute top-50 start-50 translate-middle">
     <form class="text-center" method="post" action="{{ url_for('register') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <h1 class="h3 mb-3 mt-3">Зарегистрироваться</h1>
       <div class="form-floating">
         <input type="text" class="form-control" id="floatingInput" name="username" />
