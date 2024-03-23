@@ -14,7 +14,7 @@
         <p class="text-center my-4">Извините. Такой страницы не существует.</p>
         <p class="text-center my-4">
           {% if user.is_authenticated %}
-            <a href="{{ url_for('home') }}">Вернуться на главную</a>
+            <a href="{{ url_for('get_available_products') }}">Вернуться на главную</a>
           {% else %}
             <a href="{{ url_for('login') }}">Вернуться на главную</a>
           {% endif %}

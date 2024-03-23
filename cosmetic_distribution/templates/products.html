@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}
+  Складские остатки
+{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-5">
+    <table class="table table-bordered border-dark">
+      <thead class="table-dark">
+        <tr>
+          <th>Название</th>
+          <th>Объем</th>
+          <th>Количество</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+          <tr>
+            <td>{{ product.title }}</td>
+            <td>{{ product.volume }}</td>
+            <td>{{ product.amount }}шт</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

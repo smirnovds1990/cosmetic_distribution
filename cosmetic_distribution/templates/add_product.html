@@ -3,7 +3,29 @@
   Добавить товар
 {% endblock %}
 {% block content %}
-  <div class="position-absolute top-50 start-50 translate-middle">
-    <div>Здесь форма для добавления продукта.</div>
-  </div>
+  <main class="position-absolute top-50 start-50 translate-middle col-6">
+    <form method="post">
+      {{ form.csrf_token }}
+      {{ form.title(class = 'form-control form-control-lg py-3 mb-3', placeholder = 'Название') }}
+      {{ form.volume(class = 'form-control form-control-lg py-3 mb-3', placeholder = 'Объем') }}
+      {{ form.amount(class = 'form-control form-control-lg py-3 mb-3', placeholder = 'Количество') }}
+      {{ form.brand(class = 'form-control form-control-lg py-3 mb-3', placeholder = 'Бренд') }}
+      {{ form.submit(class = 'btn btn-secondary mt-3 py-2') }}
+      <div class="form-floating mt-3">
+        {% with messages = get_flashed_messages(with_categories = true) %}
+          {% if messages %}
+            <div>
+              {% for category, message in messages %}
+                {% if category == 'success' %}
+                  <span style="color: green">{{ message }}</span>
+                {% elif category == 'error' %}
+                  <span style="color: red">{{ message }}</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </form>
+  </main>
 {% endblock %}
