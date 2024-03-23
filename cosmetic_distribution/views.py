@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 # from sqlalchemy.exc import IntegrityError
@@ -11,6 +13,11 @@ from .models import User
 @login_manager.user_loader
 def loader_user(user_id):
     return User.query.get(user_id)
+
+
+@app.context_processor
+def inject_datetime_to_templates():
+    return {'now': datetime.now()}
 
 
 # Only for administration! To create a new user. Don't delete!
@@ -34,6 +41,12 @@ def loader_user(user_id):
 #                 db.session.rollback()
 #                 flash('Пользователь с таким именем уже существует.')
 #     return render_template("sign_up.html")
+
+
+@app.route("/add_product")
+@login_required
+def add_product():
+    return render_template("add_product.html")
 
 
 @app.route("/logout")
