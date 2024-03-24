@@ -71,7 +71,7 @@ def add_product():
 @app.route('/products')
 @login_required
 def get_available_products():
-    products = Product.query.all()
+    products = Product.query.order_by(Product.title).all()
     return render_template('products.html', products=products)
 
 
