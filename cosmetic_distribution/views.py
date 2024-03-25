@@ -75,6 +75,17 @@ def get_available_products():
     return render_template('products.html', products=products)
 
 
+@app.route('/<int:id>', methods=['POST'])
+@login_required
+def delete_product(id):
+    method = request.form.get('_method', default='POST')
+    product = Product.query.filter_by(id=id).first_or_404()
+    if method == 'DELETE':
+        db.session.delete(product)
+        db.session.commit()
+        return redirect(url_for('get_available_products'))
+    return redirect(url_for('get_available_products'))
+
 # Only for administration! To create a new user. Don't delete!
 # @app.route('/register', methods=['GET', 'POST'])
 # def register():
