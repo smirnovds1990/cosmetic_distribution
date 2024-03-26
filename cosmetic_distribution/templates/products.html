@@ -7,6 +7,7 @@
     <table class="table table-bordered border-dark">
       <thead class="table-dark">
         <tr>
+          <th style="width: 50px;">№</th>
           <th style="width: 100px;">Бренд</th>
           <th>Название</th>
           <th style="width: 100px;">Объем</th>
@@ -17,6 +18,7 @@
       <tbody>
         {% for product in products %}
           <tr>
+            <td class="text-end">{{ loop.index }}</td>
             <td class="text-center">{{ product.brand }}</td>
             <td class="text-start">{{ product.title }}</td>
             <td class="text-end">{{ product.volume }}</td>

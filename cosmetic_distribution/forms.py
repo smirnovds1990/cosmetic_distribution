@@ -19,3 +19,10 @@ class ProductForm(FlaskForm):
     )
     brand = StringField('Бренд', validators=[Optional()])
     submit = SubmitField('Добавить')
+
+
+class CustomerForm(FlaskForm):
+    name = StringField(
+        'Ф. И. О.', validators=[DataRequired(message='Обязательное поле')]
+    )
+    submit = SubmitField('Добавить')

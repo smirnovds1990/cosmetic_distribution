@@ -7,8 +7,8 @@ from werkzeug.security import check_password_hash
 # from werkzeug.security import generate_password_hash
 
 from . import app, db, login_manager
-from .forms import ProductForm
-from .models import Product, User
+from .forms import CustomerForm, ProductForm
+from .models import Customer, Product, User
 
 
 @login_manager.user_loader
@@ -85,6 +85,19 @@ def delete_product(id):
         db.session.commit()
         return redirect(url_for('get_available_products'))
     return redirect(url_for('get_available_products'))
+
+
+@app.route('/add_customer', methods=['GET', 'POST'])
+@login_required
+def add_customer():
+    form = CustomerForm()
+    if form.validate_on_submit():
+        customer = Customer(name=form.name.data)
+        db.session.add(customer)
+        db.session.commit()
+        flash('Клиент успешно создан.', 'success')
+        return redirect(url_for('add_customer'))
+    return render_template('add_customer.html', form=form)
 
 # Only for administration! To create a new user. Don't delete!
 # @app.route('/register', methods=['GET', 'POST'])
