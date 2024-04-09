@@ -3,22 +3,10 @@ from datetime import datetime
 from flask_login import UserMixin
 
 from .constants import (
-    DEFAULT_AMOUNT, MAX_PRODUCT_VOLUME_LENGTH, MAX_STRING_FIELD_LENGTH
+    DEFAULT_AMOUNT, MAX_PRODUCT_VOLUME_LENGTH, MAX_STRING_FIELD_LENGTH,
+    POSITIVE_INT_DEFAULT
 )
 from . import db
-
-
-order_products = db.Table(
-    'order_products',
-    db.Column(
-        'order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True
-    ),
-    db.Column(
-        'product_id', db.Integer, db.ForeignKey('product.id'), primary_key=True
-    ),
-    db.Column('quantity', db.Integer, nullable=False),
-    db.Column('price', db.Integer, nullable=False)
-)
 
 
 class User(UserMixin, db.Model):
@@ -39,7 +27,7 @@ class Product(db.Model):
     brand = db.Column(db.String(MAX_STRING_FIELD_LENGTH))
 
     def __str__(self):
-        return f'{self.title} {self.volume} - {self.amount}шт'
+        return f'{self.title} {self.volume}'
 
 
 class Order(db.Model):
@@ -49,7 +37,7 @@ class Order(db.Model):
         db.Integer, db.ForeignKey('customer.id'), nullable=True
     )
     products = db.relationship(
-        'Product', secondary=order_products, backref='order'
+        'Product', secondary='order_product', backref='order'
     )
 
 
@@ -57,3 +45,22 @@ class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(MAX_STRING_FIELD_LENGTH), nullable=False)
     orders = db.relationship('Order', backref='customer', lazy=True)
+
+    def __str__(self):
+        return self.name
+
+
+class OrderProduct(db.Model):
+    """Вспомогательная модель для продуктов в заказе."""
+    order_id = db.Column(
+        db.Integer, db.ForeignKey('order.id'), primary_key=True
+    )
+    product_id = db.Column(
+        db.Integer, db.ForeignKey('product.id'), primary_key=True
+    )
+    quantity = db.Column(
+        db.Integer, default=POSITIVE_INT_DEFAULT, nullable=False
+    )
+    price = db.Column(
+        db.Integer, default=POSITIVE_INT_DEFAULT, nullable=False
+    )

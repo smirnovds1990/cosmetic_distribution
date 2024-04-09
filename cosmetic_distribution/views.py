@@ -7,8 +7,8 @@ from werkzeug.security import check_password_hash
 # from werkzeug.security import generate_password_hash
 
 from . import app, db, login_manager
-from .forms import CustomerForm, ProductForm
-from .models import Customer, Product, User
+from .forms import CustomerForm, OrderForm, ProductForm
+from .models import Customer, Order, OrderProduct, Product, User
 
 
 @login_manager.user_loader
@@ -98,6 +98,46 @@ def add_customer():
         flash('Клиент успешно создан.', 'success')
         return redirect(url_for('add_customer'))
     return render_template('add_customer.html', form=form)
+
+
+@app.route('/add_order', methods=['GET', 'POST'])
+@login_required
+def add_order():
+    all_customers = [
+        (customer.id, customer.name) for customer in
+        Customer.query.order_by(Customer.name).all()
+    ]
+    all_products = [
+        (product.id, product.title) for product in
+        Product.query.order_by(Product.title).all()
+    ]
+    form = OrderForm()
+    form.customer.choices = [('', '---')] + all_customers
+    for order_form in form.products:
+        order_form.products.choices = all_products
+    if form.validate_on_submit():
+        new_order = Order(customer_id=form.customer.data)
+        db.session.add(new_order)
+        db.session.commit()
+        for product_data in form.products.data:
+            new_order_product = OrderProduct(
+                order_id=new_order.id,
+                product_id=product_data['products'],
+                quantity=product_data['quantity'],
+                price=product_data['price']
+            )
+            db.session.add(new_order_product)
+        db.session.commit()
+        return redirect(url_for('get_all_orders'))
+    return render_template('add_order.html', form=form)
+
+
+@app.route('/orders')
+@login_required
+def get_all_orders():
+    orders = Order.query.order_by(Order.date).all()
+    return render_template('orders.html', orders=orders)
+
 
 # Only for administration! To create a new user. Don't delete!
 # @app.route('/register', methods=['GET', 'POST'])

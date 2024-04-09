@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}
+  Заказы
+{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-5 mb-5">
+    <table class="table table-bordered border-dark">
+      <thead class="table-dark">
+        <tr>
+          <th style="width: 50px;">№</th>
+          <th style="width: 100px;">Дата</th>
+          <th style="width: 200px;">Клиент</th>
+          <th>Товары</th>
+          <th style="width: 70px;">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td class="text-end">{{ loop.index }}</td>
+            <td class="text-center">{{ order.date }}</td>
+            <td class="text-start">{{ order.customer }}</td>
+            <td class="text-end">
+              {% for product in order.products %}
+                <p>{{ product.title }} - {{ product.volume }}</p>
+              {% endfor %}
+            </td>
+            <td class="text-center">
+              <form method="POST" action="#">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="_method" value="DELETE" />
+                <input type="submit" class="btn btn-danger btn-sm" role="button" value="Удалить" />
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

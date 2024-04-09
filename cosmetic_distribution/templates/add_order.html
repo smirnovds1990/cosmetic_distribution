@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}
+  Новый заказ
+{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-5 mb-5">
+    <div class="position-absolute top-50 start-50 translate-middle col-6">
+      <form method="post">
+        {{ form.csrf_token }}
+        <label class="form-label">Клиент</label>
+        {{ form.customer(class = 'form-select form-select-sm py-3 mb-3', placeholder = 'Клиент') }}
+        <div id="products">
+          {% for product_form in form.products %}
+            <div class="product-form row">
+              <div class="col-6">{{ product_form.products(class = 'form-select form-select-sm py-3 mb-3', placeholder = 'Товары') }}</div>
+              <div class="col-3">{{ product_form.quantity(class = 'form-control py-3 mb-3', placeholder = 'Количество') }}</div>
+              <div class="col-3">{{ product_form.price(class = 'form-control form-control-sm py-3 mb-3', placeholder = 'Цена') }}</div>
+            </div>
+          {% endfor %}
+        </div>
+        <button type="button" id="addProduct" class="btn btn-secondary mt-3 py-2">Добавить продукт</button>
+        {{ form.submit(class = 'btn btn-secondary mt-3 py-2', value = 'Создать заказ') }}
+      </form>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      var productFormIndex = 1 // Индекс для генерации уникальных идентификаторов и имен формы
+    
+      $('#addProduct').click(function () {
+        var productFormHtml = $('#products .product-form:first').html()
+    
+        // Генерация уникальных идентификаторов и имен формы для клонированных элементов
+        var clonedFormHtml = productFormHtml.replace(/products-0/g, 'products-' + productFormIndex)
+        $('#products').append('<div class="product-form row">' + clonedFormHtml + '</div>')
+    
+        // Увеличение индекса для следующего клонированного элемента
+        productFormIndex++
+      })
+    })
+  </script>
+{% endblock %}
