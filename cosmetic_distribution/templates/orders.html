@@ -15,15 +15,18 @@
         </tr>
       </thead>
       <tbody>
-        {% for order in orders %}
+        {% set start_index = (page.page - 1) * page.per_page + 1 %}
+        {% for order in page %}
+          {% set current_index = start_index + loop.index0 %}
           <tr>
-            <td class="text-end">{{ loop.index }}</td>
+            <td class="text-end">{{ current_index }}</td>
             <td class="text-center">{{ order.date.strftime('%d-%m-%Y %H:%M:%S') }}</td>
             <td class="text-start">{{ order.customer }}</td>
             <td class="text-end">
-              {% for product in order.products %}
-                <p>{{ product.title }} - {{ product.volume }}</p>
-              {% endfor %}
+              <p>{{ order.products|join(', ') }}</p>
+              <p>
+                <button type="button" class="btn btn-secondary btn-sm">Подробнее</button>
+              </p>
             </td>
             <td class="text-center">
               <form method="POST" action="{{ url_for('delete_order', id = order.id) }}">
@@ -36,5 +39,7 @@
         {% endfor %}
       </tbody>
     </table>
+    {% from 'pagination_macros.html' import render_pagination %}
+    {{ render_pagination(page, 'get_all_orders') }}
   </div>
 {% endblock %}

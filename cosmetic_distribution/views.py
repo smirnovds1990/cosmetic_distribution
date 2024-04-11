@@ -135,8 +135,9 @@ def add_order():
 @app.route('/orders')
 @login_required
 def get_all_orders():
-    orders = Order.query.order_by(Order.date.desc()).all()
-    return render_template('orders.html', orders=orders)
+    orders = Order.query.order_by(Order.date.desc())
+    page = db.paginate(orders, per_page=5)
+    return render_template('orders.html', page=page)
 
 
 @app.route('/delete_order/<int:id>', methods=['POST'])

@@ -1,0 +1,24 @@
+{% macro render_pagination(pagination, endpoint) %}
+  <div class="page-items container-fluid mt-2 mb-2 text-center d-flex justify-content-center align-items-center">{{ pagination.first }} - {{ pagination.last }} из {{ pagination.total }} заказов</div>
+  <div class="pagination container-fluid mb-2 text-center d-flex justify-content-center align-items-center">
+    {% if pagination.has_prev %}
+      <a href="{{ url_for(endpoint, page = 1) }}" class="btn btn-link btn-sm">Первая</a>
+      <a href="{{ url_for(endpoint, page = pagination.prev_num) }}" class="btn btn-link btn-sm">Предыдущая</a>
+    {% endif %}
+    {% for page in pagination.iter_pages() %}
+      {% if page %}
+        {% if page != pagination.page %}
+          <a href="{{ url_for(endpoint, page = page) }}" class="btn btn-link btn-sm">{{ page }}</a>
+        {% else %}
+          <strong>{{ page }}</strong>
+        {% endif %}
+      {% else %}
+        <span class="ellipsis">…</span>
+      {% endif %}
+    {% endfor %}
+    {% if pagination.has_next %}
+      <a href="{{ url_for(endpoint, page = pagination.next_num) }}" class="btn btn-link btn-sm">Следующая</a>
+      <a href="{{ url_for(endpoint, page = pagination.pages) }}" class="btn btn-link btn-sm">Последняя</a>
+    {% endif %}
+  </div>
+{% endmacro %}
