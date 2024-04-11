@@ -75,7 +75,7 @@ def get_available_products():
     return render_template('products.html', products=products)
 
 
-@app.route('/<int:id>', methods=['POST'])
+@app.route('/delete_product/<int:id>', methods=['POST'])
 @login_required
 def delete_product(id):
     method = request.form.get('_method', default='POST')
@@ -135,8 +135,20 @@ def add_order():
 @app.route('/orders')
 @login_required
 def get_all_orders():
-    orders = Order.query.order_by(Order.date).all()
+    orders = Order.query.order_by(Order.date.desc()).all()
     return render_template('orders.html', orders=orders)
+
+
+@app.route('/delete_order/<int:id>', methods=['POST'])
+@login_required
+def delete_order(id):
+    method = request.form.get('_method', default='POST')
+    order = Order.query.filter_by(id=id).first_or_404()
+    if method == 'DELETE':
+        db.session.delete(order)
+        db.session.commit()
+        return redirect(url_for('get_all_orders'))
+    return redirect(url_for('get_all_orders'))
 
 
 # Only for administration! To create a new user. Don't delete!

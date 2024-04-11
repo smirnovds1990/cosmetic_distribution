@@ -18,7 +18,7 @@
         {% for order in orders %}
           <tr>
             <td class="text-end">{{ loop.index }}</td>
-            <td class="text-center">{{ order.date }}</td>
+            <td class="text-center">{{ order.date.strftime('%d-%m-%Y %H:%M:%S') }}</td>
             <td class="text-start">{{ order.customer }}</td>
             <td class="text-end">
               {% for product in order.products %}
@@ -26,7 +26,7 @@
               {% endfor %}
             </td>
             <td class="text-center">
-              <form method="POST" action="#">
+              <form method="POST" action="{{ url_for('delete_order', id = order.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <input type="hidden" name="_method" value="DELETE" />
                 <input type="submit" class="btn btn-danger btn-sm" role="button" value="Удалить" />
