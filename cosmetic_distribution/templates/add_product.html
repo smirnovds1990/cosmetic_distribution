@@ -6,13 +6,12 @@
   <main class="position-absolute top-50 start-50 translate-middle col-6">
     <form method="post">
       {{ form.csrf_token }}
-      {{ form.title(class = 'form-control form-control-lg py-3 mb-3', placeholder = 'Название') }}
-      {{ form.volume(class = 'form-control form-control-lg py-3 mb-3', placeholder = 'Объем') }}
-      {{ form.amount(class = 'form-control form-control-lg py-3 mb-3', placeholder = 'Количество') }}
-      {{ form.brand(class = 'form-control form-control-lg py-3 mb-3', placeholder = 'Бренд') }}
-      {{ form.submit(class = 'btn btn-secondary mt-3 py-2') }}
+      {{ form.title(class='form-control form-control-lg py-3 mb-3', placeholder='Название') }}
+      {{ form.amount(class='form-control form-control-lg py-3 mb-3', placeholder='Количество') }}
+      {{ form.brand(class='form-control form-control-lg py-3 mb-3', placeholder='Бренд') }}
+      {{ form.submit(class='btn btn-secondary mt-3 py-2') }}
       <div class="form-floating mt-3">
-        {% with messages = get_flashed_messages(with_categories = true) %}
+        {% with messages=get_flashed_messages(with_categories=true) %}
           {% if messages %}
             <div>
               {% for category, message in messages %}

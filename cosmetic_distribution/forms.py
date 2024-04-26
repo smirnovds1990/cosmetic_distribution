@@ -1,23 +1,21 @@
 from flask_wtf import FlaskForm
 from wtforms import (
-    FieldList, FormField, IntegerField, SelectField, SelectMultipleField,
-    StringField, SubmitField
+    FieldList, FormField, IntegerField, SelectField, StringField, SubmitField
 )
 from wtforms.validators import DataRequired, NumberRange, Optional
+
+from .validators import only_russian_chars
 
 
 class ProductForm(FlaskForm):
     title = StringField(
         'Название', validators=[DataRequired(message='Обязательное поле')]
     )
-    volume = StringField(
-        'Объем', validators=[DataRequired(message='Обязательное поле')]
-    )
     amount = IntegerField(
         'Количество',
         validators=[
             DataRequired(message='Обязательное поле'),
-            NumberRange(min=0)
+            NumberRange(min=1)
         ]
     )
     brand = StringField('Бренд', validators=[Optional()])
@@ -26,7 +24,11 @@ class ProductForm(FlaskForm):
 
 class CustomerForm(FlaskForm):
     name = StringField(
-        'Ф. И. О.', validators=[DataRequired(message='Обязательное поле')]
+        'Ф. И. О.',
+        validators=[
+            DataRequired(message='Обязательное поле'),
+            only_russian_chars
+        ]
     )
     submit = SubmitField('Добавить')
 
@@ -44,9 +46,11 @@ class OrderProductForm(FlaskForm):
         ]
     )
     price = IntegerField(
-        'Цена', validators=[DataRequired(message='Обязательное поле')]
+        'Цена', validators=[
+            DataRequired(message='Обязательное поле'),
+            NumberRange(min=1)
+        ]
     )
-    submit_remove = SubmitField('Удалить')
 
 
 class OrderForm(FlaskForm):

@@ -55,7 +55,6 @@ def add_product():
     if form.validate_on_submit():
         product = Product(
             title=form.title.data,
-            volume=form.volume.data,
             amount=form.amount.data,
             brand=form.brand.data
         )

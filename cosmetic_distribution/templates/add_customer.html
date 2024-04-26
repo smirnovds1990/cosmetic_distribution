@@ -6,22 +6,16 @@
   <main class="position-absolute top-50 start-50 translate-middle col-6">
     <form method="post">
       {{ form.csrf_token }}
-      {{ form.name(class = 'form-control form-control-lg py-3 mb-3', placeholder = 'Ф. И. О.') }}
-      {{ form.submit(class = 'btn btn-secondary mt-3 py-2') }}
+      {{ form.name(class='form-control form-control-lg py-3 mb-3', placeholder='Ф. И. О.') }}
+      {{ form.submit(class='btn btn-secondary mt-3 py-2') }}
       <div class="form-floating mt-3">
-        {% with messages = get_flashed_messages(with_categories = true) %}
-          {% if messages %}
-            <div>
-              {% for category, message in messages %}
-                {% if category == 'success' %}
-                  <span style="color: green">{{ message }}</span>
-                {% elif category == 'error' %}
-                  <span style="color: red">{{ message }}</span>
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endwith %}
+        {% if form.name.errors %}
+          <ul>
+            {% for error in form.name.errors %}
+            <span style="color: red">{{ error }}</span>
+            {% endfor %}
+          </ul>
+        {% endif %}
       </div>
     </form>
   </main>
