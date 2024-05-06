@@ -119,6 +119,15 @@ def add_order():
         db.session.add(new_order)
         db.session.commit()
         for product_data in form.products.data:
+            product_id = (
+                Product.query.filter_by(
+                    id=product_data['products']
+                    ).first_or_404()
+            )
+            storage_quantity = product_id.amount
+            order_quantity = product_data['quantity']
+            new_quantity = storage_quantity - order_quantity
+            product_id.amount = new_quantity
             new_order_product = OrderProduct(
                 order_id=new_order.id,
                 product_id=product_data['products'],

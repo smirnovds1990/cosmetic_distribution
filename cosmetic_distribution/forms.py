@@ -4,7 +4,7 @@ from wtforms import (
 )
 from wtforms.validators import DataRequired, NumberRange, Optional
 
-from .validators import only_russian_chars
+from .validators import only_russian_chars, product_quantity_is_enough
 
 
 class ProductForm(FlaskForm):
@@ -57,7 +57,10 @@ class OrderForm(FlaskForm):
     customer = SelectField('Клиент', choices=[])
     products = FieldList(
         FormField(OrderProductForm),
-        validators=[DataRequired(message='Обязательное поле')],
+        validators=[
+            DataRequired(message='Обязательное поле'),
+            product_quantity_is_enough
+        ],
         min_entries=1
     )
     submit = SubmitField('Добавить')

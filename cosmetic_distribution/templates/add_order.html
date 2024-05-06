@@ -8,18 +8,29 @@
       <form method="post">
         {{ form.csrf_token }}
         <label class="form-label">Клиент</label>
-        {{ form.customer(class = 'form-select form-select-sm py-3 mb-3', placeholder = 'Клиент') }}
+        {{ form.customer(class='form-select form-select-sm py-3 mb-3', placeholder='Клиент') }}
         <div id="products">
           {% for product_form in form.products %}
             <div class="product-form row">
-              <div class="col-6">{{ product_form.products(class = 'form-select form-select-sm py-3 mb-3', placeholder = 'Товары') }}</div>
-              <div class="col-3">{{ product_form.quantity(class = 'form-control py-3 mb-3', placeholder = 'Количество') }}</div>
-              <div class="col-3">{{ product_form.price(class = 'form-control form-control-sm py-3 mb-3', placeholder = 'Цена') }}</div>
+              <div class="col-6">{{ product_form.products(class='form-select form-select-sm py-3 mb-3', placeholder='Товары') }}</div>
+              <div class="col-3">{{ product_form.quantity(class='form-control py-3 mb-3', placeholder='Количество') }}</div>
+              <div class="col-3">{{ product_form.price(class='form-control form-control-sm py-3 mb-3', placeholder='Цена') }}</div>
             </div>
           {% endfor %}
         </div>
         <button type="button" id="addProduct" class="btn btn-secondary mt-3 py-2">Добавить продукт</button>
-        {{ form.submit(class = 'btn btn-secondary mt-3 py-2', value = 'Создать заказ') }}
+        {{ form.submit(class='btn btn-secondary mt-3 py-2', value='Создать заказ') }}
+        <div class="form-floating mt-3">
+          {% if form.errors %}
+            {% for field, error_messages in form.errors.items() %}
+              {% for error_message in error_messages %}
+                <div style="color: red">
+                  <pre>{{ error_message }}</pre>
+                </div>
+              {% endfor %}
+            {% endfor %}
+          {% endif %}
+        </div>
       </form>
     </div>
   </div>
