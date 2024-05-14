@@ -24,6 +24,9 @@ class Product(db.Model):
     amount = db.Column(db.Integer, default=DEFAULT_AMOUNT)
     brand = db.Column(db.String(MAX_STRING_FIELD_LENGTH))
 
+    def __str__(self):
+        return self.title
+
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)

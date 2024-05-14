@@ -25,7 +25,7 @@
             <td class="text-end">
               <p>{{ order.products|join(', ') }}</p>
               <p>
-                <button type="button" class="btn btn-secondary btn-sm">Подробнее</button>
+                <a href="{{ url_for('get_order', id = order.id) }}" class="link-secondary">Подробнее</a>
               </p>
             </td>
             <td class="text-center">

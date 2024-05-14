@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}
+  Заказ от {{ context['order'].date.strftime('%d-%m-%Y %H:%M:%S') }}
+{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-5 mb-5">
+    <table class="table table-bordered border-dark">
+      <thead class="table-dark">
+        <tr>
+          <th>{{ context['order'].customer }} - {{ context['order'].date.strftime('%d-%m-%Y %H:%M:%S') }}</th>
+          <th>Количество</th>
+          <th>Цена</th>
+          <th>Сумма</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order_product, product in context['order_products'] %}
+          <tr>
+            <td>{{ product.title }}</td>
+            <td>{{ order_product.quantity }}шт</td>
+            <td>{{ order_product.price }}руб.</td>
+            {% set result = order_product.quantity * order_product.price %}
+            <td>{{ result }}руб.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

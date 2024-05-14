@@ -155,6 +155,22 @@ def get_all_orders():
     return render_template('orders.html', page=page)
 
 
+@app.route('/orders/<int:id>')
+@login_required
+def get_order(id):
+    order = Order.query.filter_by(id=id).first_or_404()
+    order_products = OrderProduct.query.filter_by(order_id=id).all()
+    products = [
+        Product.query.filter_by(id=op.product_id).first_or_404()
+        for op in order_products
+    ]
+    context = {
+        'order': order,
+        'order_products': zip(order_products, products)
+    }
+    return render_template('order.html', context=context)
+
+
 @app.route('/delete_order/<int:id>', methods=['POST'])
 @login_required
 def delete_order(id):
