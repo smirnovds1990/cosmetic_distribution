@@ -53,11 +53,16 @@ def logout():
 def add_product():
     form = ProductForm()
     if form.validate_on_submit():
-        product = Product(
-            title=form.title.data,
-            amount=form.amount.data,
-            brand=form.brand.data
-        )
+        product = Product.query.filter_by(title=form.title.data).first_or_404()
+        if not product:
+            product = Product(
+                title=form.title.data,
+                amount=form.amount.data,
+                brand=form.brand.data
+            )
+        else:
+            product.amount += form.amount.data
+            product.brand = form.brand.data
         db.session.add(product)
         db.session.commit()
         flash('Товар успешно создан.', 'success')
@@ -70,7 +75,9 @@ def add_product():
 @app.route('/products')
 @login_required
 def get_available_products():
-    products = Product.query.order_by(Product.title).all()
+    products = Product.query.order_by(Product.title).filter(
+        Product.amount > 0
+    )
     return render_template('products.html', products=products)
 
 
