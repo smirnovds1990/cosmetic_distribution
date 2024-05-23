@@ -3,8 +3,8 @@
   Новый заказ
 {% endblock %}
 {% block content %}
-  <div class="container-fluid mt-5 mb-5">
-    <div class="position-absolute top-50 start-50 translate-middle col-6">
+  <div class="container-fluid mt-5 mb-5 d-flex justify-content-center align-items-start" style="min-height: 100vh;">
+    <div class="col-6">
       <form method="post">
         {{ form.csrf_token }}
         <label class="form-label">Клиент</label>
