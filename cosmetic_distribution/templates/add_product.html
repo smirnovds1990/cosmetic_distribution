@@ -9,6 +9,8 @@
       {{ form.title(class='form-control form-control-lg py-3 mb-3', placeholder='Название') }}
       {{ form.amount(class='form-control form-control-lg py-3 mb-3', placeholder='Количество') }}
       {{ form.brand(class='form-control form-control-lg py-3 mb-3', placeholder='Бренд') }}
+      {{ form.wholesale_price(class='form-control form-control-lg py-3 mb-3', placeholder='Закупочная цена') }}
+      {{ form.retail_price(class='form-control form-control-lg py-3 mb-3', placeholder='Розничная цена') }}
       {{ form.submit(class='btn btn-secondary mt-3 py-2') }}
       <div class="form-floating mt-3">
         {% with messages=get_flashed_messages(with_categories=true) %}

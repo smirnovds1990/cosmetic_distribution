@@ -1,10 +1,13 @@
 from flask_wtf import FlaskForm
 from wtforms import (
-    FieldList, FormField, IntegerField, SelectField, StringField, SubmitField
+    FieldList, FloatField, FormField, IntegerField, SelectField, StringField,
+    SubmitField
 )
 from wtforms.validators import DataRequired, NumberRange, Optional
 
-from .validators import only_russian_chars, product_quantity_is_enough
+from .validators import (
+    only_russian_chars, price_is_positive, product_quantity_is_enough
+)
 
 
 class ProductForm(FlaskForm):
@@ -19,6 +22,12 @@ class ProductForm(FlaskForm):
         ]
     )
     brand = StringField('Бренд', validators=[Optional()])
+    wholesale_price = FloatField(
+        'Закупочная цена', validators=[price_is_positive]
+    )
+    retail_price = FloatField(
+        'Розничная цена', validators=[price_is_positive]
+    )
     submit = SubmitField('Добавить')
 
 

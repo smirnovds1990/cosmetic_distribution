@@ -29,3 +29,10 @@ def product_quantity_is_enough(form, field):
             f'В наличии нет достаточного количества следующих товаров:\n'
             f'{products_in_deficit}'
         )
+
+
+def price_is_positive(form, field):
+    if field.data is None:
+        raise ValidationError('В цене можно использовать только цифры.')
+    elif field.data < 0:
+        raise ValidationError('Цена не может быть меньше 0.')

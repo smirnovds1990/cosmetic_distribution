@@ -53,22 +53,28 @@ def logout():
 def add_product():
     form = ProductForm()
     if form.validate_on_submit():
-        product = Product.query.filter_by(title=form.title.data).first_or_404()
+        product = Product.query.filter_by(title=form.title.data).first()
         if not product:
             product = Product(
                 title=form.title.data,
                 amount=form.amount.data,
-                brand=form.brand.data
+                brand=form.brand.data,
+                wholesale_price=form.wholesale_price.data,
+                retail_price=form.retail_price.data
             )
         else:
             product.amount += form.amount.data
             product.brand = form.brand.data
+            product.wholesale_price = form.wholesale_price.data,
+            product.retail_price = form.retail_price.data
         db.session.add(product)
         db.session.commit()
         flash('Товар успешно создан.', 'success')
         return redirect(url_for('add_product'))
     if request.method == 'POST':
-        flash('Форма заполнена неврено.', 'error')
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'{getattr(form, field).label.text}: {error}', 'error')
     return render_template('add_product.html', form=form)
 
 

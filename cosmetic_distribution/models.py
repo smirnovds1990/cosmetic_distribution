@@ -23,6 +23,8 @@ class Product(db.Model):
     title = db.Column(db.String(MAX_STRING_FIELD_LENGTH), nullable=False)
     amount = db.Column(db.Integer, default=DEFAULT_AMOUNT)
     brand = db.Column(db.String(MAX_STRING_FIELD_LENGTH))
+    wholesale_price = db.Column(db.Float)
+    retail_price = db.Column(db.Float)
 
     def __str__(self):
         return self.title

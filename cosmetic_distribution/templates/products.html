@@ -10,7 +10,8 @@
           <th style="width: 50px;">№</th>
           <th style="width: 100px;">Бренд</th>
           <th>Название</th>
-          <th style="width: 100px;">Объем</th>
+          <th style="width: 100px;">Опт</th>
+          <th style="width: 100px;">Розница</th>
           <th style="width: 100px;">Количество</th>
           <th style="width: 70px;">Действия</th>
         </tr>
@@ -21,7 +22,8 @@
             <td class="text-end">{{ loop.index }}</td>
             <td class="text-center">{{ product.brand }}</td>
             <td class="text-start">{{ product.title }}</td>
-            <td class="text-end">{{ product.volume }}</td>
+            <td class="text-end">{{ product.wholesale_price }}</td>
+            <td class="text-end">{{ product.retail_price }}</td>
             <td class="text-end">{{ product.amount }}шт</td>
             <td class="text-center">
               <form method="POST" action="{{ url_for('delete_product', id = product.id) }}">
