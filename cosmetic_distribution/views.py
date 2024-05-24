@@ -6,14 +6,18 @@ from flask_login import login_required, login_user, logout_user
 from werkzeug.security import check_password_hash
 # from werkzeug.security import generate_password_hash
 
-from . import app, db, login_manager
+from . import app, login_manager
 from .forms import CustomerForm, OrderForm, ProductForm
 from .models import Customer, Order, OrderProduct, Product, User
+from .services import (
+    create_customer, create_order, create_product, delete_obj,
+    get_paginated_orders
+)
 
 
 @login_manager.user_loader
 def loader_user(user_id):
-    """Загружает текущего пользователя из сессии. (Из док-ции flask-login)."""
+    """Загружает текущего пользователя из сессии. (Из док-ции Flask-Login)."""
     return User.query.get(user_id)
 
 
@@ -53,22 +57,7 @@ def logout():
 def add_product():
     form = ProductForm()
     if form.validate_on_submit():
-        product = Product.query.filter_by(title=form.title.data).first()
-        if not product:
-            product = Product(
-                title=form.title.data,
-                amount=form.amount.data,
-                brand=form.brand.data,
-                wholesale_price=form.wholesale_price.data,
-                retail_price=form.retail_price.data
-            )
-        else:
-            product.amount += form.amount.data
-            product.brand = form.brand.data
-            product.wholesale_price = form.wholesale_price.data,
-            product.retail_price = form.retail_price.data
-        db.session.add(product)
-        db.session.commit()
+        create_product(form=form)
         flash('Товар успешно создан.', 'success')
         return redirect(url_for('add_product'))
     if request.method == 'POST':
@@ -93,8 +82,7 @@ def delete_product(id):
     method = request.form.get('_method', default='POST')
     product = Product.query.filter_by(id=id).first_or_404()
     if method == 'DELETE':
-        db.session.delete(product)
-        db.session.commit()
+        delete_obj(obj=product)
         return redirect(url_for('get_available_products'))
     return redirect(url_for('get_available_products'))
 
@@ -104,9 +92,7 @@ def delete_product(id):
 def add_customer():
     form = CustomerForm()
     if form.validate_on_submit():
-        customer = Customer(name=form.name.data)
-        db.session.add(customer)
-        db.session.commit()
+        create_customer(form=form)
         flash('Клиент успешно создан.', 'success')
         return redirect(url_for('add_customer'))
     return render_template('add_customer.html', form=form)
@@ -128,27 +114,7 @@ def add_order():
     for order_form in form.products:
         order_form.products.choices = all_products
     if form.validate_on_submit():
-        new_order = Order(customer_id=form.customer.data)
-        db.session.add(new_order)
-        db.session.commit()
-        for product_data in form.products.data:
-            product_id = (
-                Product.query.filter_by(
-                    id=product_data['products']
-                    ).first_or_404()
-            )
-            storage_quantity = product_id.amount
-            order_quantity = product_data['quantity']
-            new_quantity = storage_quantity - order_quantity
-            product_id.amount = new_quantity
-            new_order_product = OrderProduct(
-                order_id=new_order.id,
-                product_id=product_data['products'],
-                quantity=product_data['quantity'],
-                price=product_data['price']
-            )
-            db.session.add(new_order_product)
-        db.session.commit()
+        create_order(form=form)
         return redirect(url_for('get_all_orders'))
     return render_template('add_order.html', form=form)
 
@@ -157,7 +123,7 @@ def add_order():
 @login_required
 def get_all_orders():
     orders = Order.query.order_by(Order.date.desc())
-    page = db.paginate(orders, per_page=5)
+    page = get_paginated_orders(orders=orders)
     return render_template('orders.html', page=page)
 
 
@@ -183,8 +149,7 @@ def delete_order(id):
     method = request.form.get('_method', default='POST')
     order = Order.query.filter_by(id=id).first_or_404()
     if method == 'DELETE':
-        db.session.delete(order)
-        db.session.commit()
+        delete_obj(obj=order)
         return redirect(url_for('get_all_orders'))
     return redirect(url_for('get_all_orders'))
 

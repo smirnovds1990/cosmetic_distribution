@@ -3,11 +3,10 @@ from wtforms import (
     FieldList, FloatField, FormField, IntegerField, SelectField, StringField,
     SubmitField
 )
-from wtforms.validators import DataRequired, NumberRange, Optional
+from wtforms.validators import DataRequired, NumberRange, Optional, Regexp
 
-from .validators import (
-    only_russian_chars, price_is_positive, product_quantity_is_enough
-)
+from .constants import NAME_PATTERN
+from .validators import price_is_positive, product_quantity_is_enough
 
 
 class ProductForm(FlaskForm):
@@ -36,7 +35,10 @@ class CustomerForm(FlaskForm):
         'Ф. И. О.',
         validators=[
             DataRequired(message='Обязательное поле'),
-            only_russian_chars
+            Regexp(
+                NAME_PATTERN,
+                message='В имени можно использовать только русские буквы.'
+            )
         ]
     )
     submit = SubmitField('Добавить')
