@@ -8,8 +8,8 @@ from . import app, login_manager
 from .forms import CustomerForm, OrderForm, ProductForm
 from .models import Customer, Order, OrderProduct, Product, User
 from .services import (
-    create_customer, create_order, create_product, delete_obj,
-    get_paginated_orders
+    create_customer, create_order, create_product, delete_one_order,
+    get_paginated_orders, set_product_amount_to_zero
 )
 
 
@@ -80,7 +80,7 @@ def delete_product(id):
     method = request.form.get('_method', default='POST')
     product = Product.query.filter_by(id=id).first_or_404()
     if method == 'DELETE':
-        delete_obj(obj=product)
+        set_product_amount_to_zero(product=product)
         return redirect(url_for('get_available_products'))
     return redirect(url_for('get_available_products'))
 
@@ -152,6 +152,6 @@ def delete_order(id):
     method = request.form.get('_method', default='POST')
     order = Order.query.filter_by(id=id).first_or_404()
     if method == 'DELETE':
-        delete_obj(obj=order)
+        delete_one_order(order=order)
         return redirect(url_for('get_all_orders'))
     return redirect(url_for('get_all_orders'))

@@ -3,7 +3,9 @@ from wtforms import (
     FieldList, FloatField, FormField, IntegerField, SelectField, StringField,
     SubmitField
 )
-from wtforms.validators import DataRequired, NumberRange, Optional, Regexp
+from wtforms.validators import (
+    DataRequired, NumberRange, Optional, Regexp, ValidationError
+)
 
 from .constants import NAME_PATTERN
 from .validators import price_is_positive, product_quantity_is_enough
@@ -22,12 +24,24 @@ class ProductForm(FlaskForm):
     )
     brand = StringField('Бренд', validators=[Optional()])
     wholesale_price = FloatField(
-        'Закупочная цена', validators=[price_is_positive]
+        'Закупочная цена', validators=[
+            DataRequired(message='Обязательное поле'),
+            price_is_positive
+        ]
     )
     retail_price = FloatField(
-        'Розничная цена', validators=[price_is_positive]
+        'Розничная цена', validators=[
+            DataRequired(message='Обязательное поле'),
+            price_is_positive
+        ]
     )
     submit = SubmitField('Добавить')
+
+    def validate_retail_price(self, field):
+        if field.data <= self.wholesale_price.data:
+            raise ValidationError(
+                'Розничная цена не может быть меньше закупочной.'
+            )
 
 
 class CustomerForm(FlaskForm):

@@ -51,8 +51,14 @@ def create_order(form):
     db.session.commit()
 
 
-def delete_obj(obj):
-    db.session.delete(obj)
+def set_product_amount_to_zero(product):
+    product.amount = 0
+    db.session.add(product)
+    db.session.commit()
+
+
+def delete_one_order(order):
+    db.session.delete(order)
     db.session.commit()
 
 
