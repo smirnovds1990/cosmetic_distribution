@@ -2,9 +2,7 @@ from datetime import datetime
 
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
-# from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash
-# from werkzeug.security import generate_password_hash
 
 from . import app, login_manager
 from .forms import CustomerForm, OrderForm, ProductForm
@@ -152,26 +150,3 @@ def delete_order(id):
         delete_obj(obj=order)
         return redirect(url_for('get_all_orders'))
     return redirect(url_for('get_all_orders'))
-
-
-# Only for administration! To create a new user. Don't delete!
-# @app.route('/register', methods=['GET', 'POST'])
-# def register():
-#     if request.method == 'POST':
-#         password = request.form.get('password')
-#         if not password or len(password) < 8:
-#             flash('Введите пароль не менее 8 символов.')
-#         else:
-#             hashed_password = generate_password_hash(password)
-#             try:
-#                 user = User(
-#                     username=request.form.get('username'),
-#                     password=hashed_password
-#                 )
-#                 db.session.add(user)
-#                 db.session.commit()
-#                 return redirect(url_for('login'))
-#             except IntegrityError:
-#                 db.session.rollback()
-#                 flash('Пользователь с таким именем уже существует.')
-#     return render_template('sign_up.html')
