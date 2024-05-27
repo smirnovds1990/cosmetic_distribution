@@ -12,7 +12,7 @@
         <div id="products">
           {% for product_form in form.products %}
             <div class="product-form row">
-              <div class="col-6">{{ product_form.products(class='form-select form-select-sm py-3 mb-3', placeholder='Товары') }}</div>
+              <div class="col-6">{{ product_form.products(class='form-select form-select-sm py-3 mb-3', placeholder='Товары', onchange='updatePrice(this)') }}</div>
               <div class="col-3">{{ product_form.quantity(class='form-control py-3 mb-3', placeholder='Количество') }}</div>
               <div class="col-3">{{ product_form.price(class='form-control form-control-sm py-3 mb-3', placeholder='Цена') }}</div>
             </div>
@@ -50,5 +50,18 @@
         productFormIndex++
       })
     })
+
+    // Список продуктов и их цен
+    const productPrices = {{ product_prices|tojson }};
+
+    function updatePrice(selectElement) {
+      const selectedProductId = selectElement.value;
+      const priceInput = selectElement.closest('.product-form').querySelector('[name$="price"]');
+      if (selectedProductId in productPrices) {
+        priceInput.value = productPrices[selectedProductId];
+      } else {
+        priceInput.value = '';
+      }
+    }
   </script>
 {% endblock %}

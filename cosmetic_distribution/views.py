@@ -107,6 +107,9 @@ def add_order():
         (product.id, product.title) for product in
         Product.query.order_by(Product.title).all()
     ]
+    product_prices = {
+        product.id: product.retail_price for product in Product.query.all()
+    }
     form = OrderForm()
     form.customer.choices = [('', '---')] + all_customers
     for order_form in form.products:
@@ -114,7 +117,9 @@ def add_order():
     if form.validate_on_submit():
         create_order(form=form)
         return redirect(url_for('get_all_orders'))
-    return render_template('add_order.html', form=form)
+    return render_template(
+        'add_order.html', form=form, product_prices=product_prices
+    )
 
 
 @app.route('/orders')
