@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 from werkzeug.security import check_password_hash
+from werkzeug.exceptions import InternalServerError
 
 from . import app, login_manager
 from .forms import CustomerForm, OrderForm, ProductForm
@@ -23,6 +24,12 @@ def loader_user(user_id):
 def inject_datetime_to_templates():
     """Добавление текущего времени для доступа в шаблонах."""
     return {'now': datetime.now()}
+
+
+@app.route('/cause_internal_error')
+def cause_internal_error():
+    """Маршрут для тестирования 500 ошибки."""
+    raise InternalServerError('This is a test exception.')
 
 
 @app.route('/', methods=['GET', 'POST'])
