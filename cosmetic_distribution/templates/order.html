@@ -24,6 +24,16 @@
           </tr>
         {% endfor %}
       </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" class="text-end">
+            <strong>Итого:</strong>
+          </td>
+          <td>
+            <strong>{{ context['total_sum'] }}руб.</strong>
+          </td>
+        </tr>
+      </tfoot>
     </table>
   </div>
 {% endblock %}

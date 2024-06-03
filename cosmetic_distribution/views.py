@@ -146,9 +146,13 @@ def get_order(id):
         Product.query.filter_by(id=op.product_id).first_or_404()
         for op in order_products
     ]
+    total_sum = 0
+    for order_product in order_products:
+        total_sum += (order_product.quantity * order_product.price)
     context = {
         'order': order,
-        'order_products': zip(order_products, products)
+        'order_products': zip(order_products, products),
+        'total_sum': total_sum
     }
     return render_template('order.html', context=context)
 

@@ -4,7 +4,7 @@ from werkzeug.exceptions import NotFound, InternalServerError
 from cosmetic_distribution import app
 
 
-class TestCutomErrorPages(unittest.TestCase):
+class TestCustomErrorPages(unittest.TestCase):
 
     def setUp(self):
         self.app = app
