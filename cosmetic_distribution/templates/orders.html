@@ -25,11 +25,11 @@
             <td class="text-end">
               <p>{{ order.products|join(', ') }}</p>
               <p>
-                <a href="{{ url_for('get_order', id = order.id) }}" class="link-secondary">Подробнее</a>
+                <a href="{{ url_for('main.get_order', id = order.id) }}" class="link-secondary">Подробнее</a>
               </p>
             </td>
             <td class="text-center">
-              <form method="POST" action="{{ url_for('delete_order', id = order.id) }}">
+              <form method="POST" action="{{ url_for('main.delete_order', id = order.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <input type="hidden" name="_method" value="DELETE" />
                 <input type="submit" class="btn btn-danger btn-sm" role="button" value="Удалить" />
@@ -40,6 +40,6 @@
       </tbody>
     </table>
     {% from 'pagination_macros.html' import render_pagination %}
-    {{ render_pagination(page, 'get_all_orders') }}
+    {{ render_pagination(page, 'main.get_all_orders') }}
   </div>
 {% endblock %}

@@ -1,14 +1,14 @@
 import unittest
 from werkzeug.exceptions import NotFound, InternalServerError
 
-from cosmetic_distribution import app
+from cosmetic_distribution import create_app
+from settings import TestConfig
 
 
 class TestCustomErrorPages(unittest.TestCase):
 
     def setUp(self):
-        self.app = app
-        self.app.testing = True
+        self.app = create_app(TestConfig)
         self.client = self.app.test_client()
 
     def test_page_not_found(self):

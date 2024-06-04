@@ -26,7 +26,7 @@
             <td class="text-end">{{ product.retail_price }}</td>
             <td class="text-end">{{ product.amount }}шт</td>
             <td class="text-center">
-              <form method="POST" action="{{ url_for('delete_product', id = product.id) }}">
+              <form method="POST" action="{{ url_for('main.delete_product', id = product.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                 <input type="hidden" name="_method" value="DELETE" />
                 <input type="submit" class="btn btn-danger btn-sm" role="button" value="Удалить" />
