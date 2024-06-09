@@ -14,18 +14,26 @@ class TestViewsCase(unittest.TestCase):
         self.app_context.push()
         db.create_all()
         self.client = self.app.test_client()
+        hashed_password = generate_password_hash('pass')
+        user = User(username='test_user', password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
 
-    def test_add_customer(self):
-        new_customer = Customer(name='Иван Иванов')
-        db.session.add(new_customer)
-        db.session.commit()
-        query = Customer.query.all()
-        self.assertEqual(len(query), 1)
+    @staticmethod
+    def login(client, username, password):
+        return client.post('/', data=dict(
+            username=username,
+            password=password
+        ), follow_redirects=True)
+
+    @staticmethod
+    def logout(client):
+        return client.get('/logout', follow_redirects=True)
 
     def test_login_page(self):
         response = self.client.get('/')
@@ -35,22 +43,48 @@ class TestViewsCase(unittest.TestCase):
         self.assertIn('Имя пользователя', html)
 
     def test_login_logout(self):
-        hashed_password = generate_password_hash('pass')
-        user = User(username='test_user', password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
-        response = self.client.post(
-            '/',
-            data={
-                'username': 'test_user',
-                'password': 'pass'
-                },
-            follow_redirects=True
+        response = self.login(
+            client=self.client,
+            username='test_user',
+            password='pass'
         )
         html = response.get_data(as_text=True)
         self.assertEqual(response.status_code, 200)
         self.assertIn('Складские остатки', html)
-        response = self.client.get('/logout', follow_redirects=True)
+        response = self.logout(client=self.client)
         html = response.get_data(as_text=True)
         self.assertEqual(response.status_code, 200)
         self.assertIn('Авторизация', html)
+
+    def test_add_customer(self):
+        query = Customer.query.all()
+        self.assertEqual(len(query), 0)
+        self.login(
+            client=self.client,
+            username='test_user',
+            password='pass'
+        )
+        response = self.client.post(
+            '/add_customer',
+            data=dict(name='Иван Иванов'),
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 200)
+        query = Customer.query.all()
+        self.assertEqual(len(query), 1)
+        self.assertEqual(query[0].name, 'Иван Иванов')
+
+    def test_login_required_urls(self):
+        urls = [
+            '/logout', '/add_product', '/products',
+            '/add_customer', '/add_order',
+            '/orders', '/orders/1'
+        ]
+        for url in urls:
+            response = self.client.get(url)
+            html = response.get_data(as_text=True)
+            self.assertEqual(response.status_code, 401)
+            self.assertIn('Unauthorized', html)
+
+    def test_add_product(self):
+        pass
