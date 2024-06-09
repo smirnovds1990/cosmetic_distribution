@@ -12,3 +12,4 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'testsecretkey'
+    WTF_CSRF_ENABLED = False
