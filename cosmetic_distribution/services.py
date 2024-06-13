@@ -62,5 +62,6 @@ def delete_one_order(order):
     db.session.commit()
 
 
-def get_paginated_orders(orders):
+def get_paginated_orders():
+    orders = db.select(Order).order_by(Order.date.desc())
     return db.paginate(orders, per_page=5)

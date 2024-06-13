@@ -2,7 +2,7 @@ import unittest
 from werkzeug.security import generate_password_hash
 
 from cosmetic_distribution import create_app, db
-from cosmetic_distribution.models import Customer, User
+from cosmetic_distribution.models import Customer, Product, User
 from settings import TestConfig
 
 
@@ -56,25 +56,7 @@ class TestViewsCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('Авторизация', html)
 
-    def test_add_customer(self):
-        query = Customer.query.all()
-        self.assertEqual(len(query), 0)
-        self.login(
-            client=self.client,
-            username='test_user',
-            password='pass'
-        )
-        response = self.client.post(
-            '/add_customer',
-            data=dict(name='Иван Иванов'),
-            follow_redirects=True
-        )
-        self.assertEqual(response.status_code, 200)
-        query = Customer.query.all()
-        self.assertEqual(len(query), 1)
-        self.assertEqual(query[0].name, 'Иван Иванов')
-
-    def test_login_required_urls(self):
+    def test_unauthorized_client_cant_get_login_required_urls(self):
         urls = [
             '/logout', '/add_product', '/products',
             '/add_customer', '/add_order',
@@ -86,5 +68,60 @@ class TestViewsCase(unittest.TestCase):
             self.assertEqual(response.status_code, 401)
             self.assertIn('Unauthorized', html)
 
+    def test_authorized_client_get_all_urls(self):
+        urls = [
+            '/add_product', '/products',
+            '/add_customer', '/add_order',
+            '/orders'
+        ]
+        self.login(
+            client=self.client,
+            username='test_user',
+            password='pass'
+        )
+        for url in urls:
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+
+    def test_add_customer(self):
+        all_customers = Customer.query.all()
+        self.assertEqual(len(all_customers), 0)
+        self.login(
+            client=self.client,
+            username='test_user',
+            password='pass'
+        )
+        response = self.client.post(
+            '/add_customer',
+            data=dict(name='Иван Иванов'),
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 200)
+        all_customers = Customer.query.all()
+        self.assertEqual(len(all_customers), 1)
+        self.assertEqual(all_customers[0].name, 'Иван Иванов')
+
     def test_add_product(self):
-        pass
+        all_products = Product.query.all()
+        self.assertEqual(len(all_products), 0)
+        self.login(
+            client=self.client,
+            username='test_user',
+            password='pass'
+        )
+        response = self.client.post(
+            '/add_product',
+            data=dict(
+                title='New_test_product',
+                amount=5,
+                brand='Test_brand',
+                wholesale_price=100,
+                retail_price=200
+            ),
+            follow_redirects=True
+        )
+        self.assertEqual(response.status_code, 200)
+        all_products = Product.query.all()
+        self.assertEqual(len(all_products), 1)
+        self.assertEqual(all_products[0].title, 'New_test_product')
+        self.assertEqual(all_products[0].amount, 5)

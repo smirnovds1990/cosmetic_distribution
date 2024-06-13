@@ -129,8 +129,7 @@ def add_order():
 @main_bp.route('/orders')
 @login_required
 def get_all_orders():
-    orders = Order.query.order_by(Order.date.desc())
-    page = get_paginated_orders(orders=orders)
+    page = get_paginated_orders()
     return render_template('orders.html', page=page)
 
 
