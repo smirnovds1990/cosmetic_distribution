@@ -2,7 +2,7 @@ import unittest
 from werkzeug.security import generate_password_hash
 
 from cosmetic_distribution import create_app, db
-from cosmetic_distribution.models import Customer, Product, User
+from cosmetic_distribution.models import Customer, Order, Product, User
 from settings import TestConfig
 
 
@@ -210,3 +210,40 @@ class TestViewsCase(unittest.TestCase):
         html = response.get_data(as_text=True)
         self.assertIn('Заказы', html)
         self.assertIn('test_product', html)
+
+    def test_get_all_orders(self):
+        test_customer = Customer(name='test_customer')
+        test_product = Product(
+            title='test_product',
+            amount=10,
+            brand='Test_brand',
+            wholesale_price=100,
+            retail_price=200
+        )
+        db.session.add_all([test_customer, test_product])
+        db.session.commit()
+        self.login(
+            client=self.client,
+            username='test_user',
+            password='pass'
+        )
+        data = {
+            'customer': str(test_customer.id),
+            'products-0-products': str(test_product.id),
+            'products-0-quantity': '1',
+            'products-0-price': '200'
+        }
+        for _ in range(6):
+            self.client.post(
+                '/add_order',
+                follow_redirects=True,
+                data=data
+            )
+        response = self.client.get('/orders')
+        html = response.get_data(as_text=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Заказы', html)
+        product_amount = Product.query.filter_by(
+            title='test_product'
+        ).first_or_404()
+        self.assertEqual(product_amount.amount, 4)
