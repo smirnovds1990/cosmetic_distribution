@@ -125,3 +125,57 @@ class TestViewsCase(unittest.TestCase):
         self.assertEqual(len(all_products), 1)
         self.assertEqual(all_products[0].title, 'New_test_product')
         self.assertEqual(all_products[0].amount, 5)
+
+    def test_get_all_products(self):
+        data = {
+            'title': 'test_product',
+            'amount': 3,
+            'brand': 'test_brand',
+            'wholesale_price': 100,
+            'retail_price': 200
+        }
+        new_products = [Product(**data) for _ in range(5)]
+        db.session.add_all(new_products)
+        db.session.commit()
+        all_products = Product.query.all()
+        self.assertEqual(len(all_products), 5)
+        self.login(
+            client=self.client,
+            username='test_user',
+            password='pass'
+        )
+        response = self.client.get('/products')
+        html = response.get_data(as_text=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Складские остатки', html)
+        self.assertIn('test_product', html)
+
+    def test_delete_product(self):
+        data = {
+            'title': 'test_product',
+            'amount': 3,
+            'brand': 'test_brand',
+            'wholesale_price': 100,
+            'retail_price': 200
+        }
+        new_product = Product(**data)
+        db.session.add(new_product)
+        db.session.commit()
+        all_products = Product.query.all()
+        self.assertEqual(len(all_products), 1)
+        self.assertEqual(all_products[0].id, 1)
+        self.login(
+            client=self.client,
+            username='test_user',
+            password='pass'
+        )
+        response = self.client.post(
+            '/delete_product/1',
+            follow_redirects=True,
+            data={'_method': 'DELETE'}
+        )
+        self.assertEqual(response.status_code, 200)
+        all_products = Product.query.all()
+        self.assertEqual(len(all_products), 1)
+        self.assertEqual(all_products[0].id, 1)
+        self.assertEqual(all_products[0].amount, 0)
