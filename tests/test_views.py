@@ -179,3 +179,34 @@ class TestViewsCase(unittest.TestCase):
         self.assertEqual(len(all_products), 1)
         self.assertEqual(all_products[0].id, 1)
         self.assertEqual(all_products[0].amount, 0)
+
+    def test_add_order(self):
+        test_customer = Customer(name='test_customer')
+        test_product = Product(
+            title='test_product',
+            amount=5,
+            brand='Test_brand',
+            wholesale_price=100,
+            retail_price=200
+        )
+        db.session.add_all([test_customer, test_product])
+        db.session.commit()
+        self.login(
+            client=self.client,
+            username='test_user',
+            password='pass'
+        )
+        response = self.client.post(
+            '/add_order',
+            follow_redirects=True,
+            data={
+                'customer': str(test_customer.id),
+                'products-0-products': str(test_product.id),
+                'products-0-quantity': '2',
+                'products-0-price': '200'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn('Заказы', html)
+        self.assertIn('test_product', html)
