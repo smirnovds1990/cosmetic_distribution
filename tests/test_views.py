@@ -247,3 +247,46 @@ class TestViewsCase(unittest.TestCase):
             title='test_product'
         ).first_or_404()
         self.assertEqual(product_amount.amount, 4)
+
+    def test_get_and_delete_order(self):
+        test_customer = Customer(name='test_customer')
+        test_product = Product(
+            title='test_product',
+            amount=10,
+            brand='Test_brand',
+            wholesale_price=100,
+            retail_price=200
+        )
+        db.session.add_all([test_customer, test_product])
+        db.session.commit()
+        data = {
+            'customer': str(test_customer.id),
+            'products-0-products': str(test_product.id),
+            'products-0-quantity': '1',
+            'products-0-price': '200'
+        }
+        self.login(
+            client=self.client,
+            username='test_user',
+            password='pass'
+        )
+        self.client.post(
+            '/add_order',
+            follow_redirects=True,
+            data=data
+        )
+        response = self.client.get('/orders/1')
+        html = response.get_data(as_text=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Заказ от', html)
+        response = self.client.get('/orders/2')
+        self.assertEqual(response.status_code, 404)
+        response = self.client.post(
+            '/delete_order/1',
+            follow_redirects=True,
+            data={'_method': 'DELETE'}
+        )
+        html = response.get_data(as_text=True)
+        all_orders = Order.query.all()
+        self.assertIn('Заказы', html)
+        self.assertEqual(len(all_orders), 0)
