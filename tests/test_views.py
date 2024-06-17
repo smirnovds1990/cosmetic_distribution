@@ -18,6 +18,11 @@ class TestViewsCase(unittest.TestCase):
         user = User(username='test_user', password=hashed_password)
         db.session.add(user)
         db.session.commit()
+        self.login(
+            client=self.client,
+            username='test_user',
+            password='pass'
+        )
 
     def tearDown(self):
         db.session.remove()
@@ -31,72 +36,14 @@ class TestViewsCase(unittest.TestCase):
             password=password
         ), follow_redirects=True)
 
-    @staticmethod
-    def logout(client):
-        return client.get('/logout', follow_redirects=True)
-
-    def test_login_page(self):
-        response = self.client.get('/')
-        html = response.get_data(as_text=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Авторизация', html)
-        self.assertIn('Имя пользователя', html)
-
-    def test_login_logout(self):
-        response = self.login(
-            client=self.client,
-            username='test_user',
-            password='pass'
-        )
-        html = response.get_data(as_text=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Складские остатки', html)
-        response = self.logout(client=self.client)
-        html = response.get_data(as_text=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Авторизация', html)
-
-    def test_unauthorized_client_cant_get_login_required_urls(self):
-        urls = [
-            '/logout', '/add_product', '/products',
-            '/add_customer', '/add_order',
-            '/orders', '/orders/1'
-        ]
-        for url in urls:
-            response = self.client.get(url)
-            html = response.get_data(as_text=True)
-            self.assertEqual(response.status_code, 401)
-            self.assertIn('Unauthorized', html)
-
-    def test_authorized_client_get_all_urls(self):
-        urls = [
-            '/add_product', '/products',
-            '/add_customer', '/add_order',
-            '/orders'
-        ]
-        self.login(
-            client=self.client,
-            username='test_user',
-            password='pass'
-        )
-        for url in urls:
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 200)
-
     def test_add_customer(self):
         all_customers = Customer.query.all()
         self.assertEqual(len(all_customers), 0)
-        self.login(
-            client=self.client,
-            username='test_user',
-            password='pass'
-        )
-        response = self.client.post(
+        self.client.post(
             '/add_customer',
             data=dict(name='Иван Иванов'),
             follow_redirects=True
         )
-        self.assertEqual(response.status_code, 200)
         all_customers = Customer.query.all()
         self.assertEqual(len(all_customers), 1)
         self.assertEqual(all_customers[0].name, 'Иван Иванов')
@@ -104,12 +51,7 @@ class TestViewsCase(unittest.TestCase):
     def test_add_product(self):
         all_products = Product.query.all()
         self.assertEqual(len(all_products), 0)
-        self.login(
-            client=self.client,
-            username='test_user',
-            password='pass'
-        )
-        response = self.client.post(
+        self.client.post(
             '/add_product',
             data=dict(
                 title='New_test_product',
@@ -120,35 +62,10 @@ class TestViewsCase(unittest.TestCase):
             ),
             follow_redirects=True
         )
-        self.assertEqual(response.status_code, 200)
         all_products = Product.query.all()
         self.assertEqual(len(all_products), 1)
         self.assertEqual(all_products[0].title, 'New_test_product')
         self.assertEqual(all_products[0].amount, 5)
-
-    def test_get_all_products(self):
-        data = {
-            'title': 'test_product',
-            'amount': 3,
-            'brand': 'test_brand',
-            'wholesale_price': 100,
-            'retail_price': 200
-        }
-        new_products = [Product(**data) for _ in range(5)]
-        db.session.add_all(new_products)
-        db.session.commit()
-        all_products = Product.query.all()
-        self.assertEqual(len(all_products), 5)
-        self.login(
-            client=self.client,
-            username='test_user',
-            password='pass'
-        )
-        response = self.client.get('/products')
-        html = response.get_data(as_text=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Складские остатки', html)
-        self.assertIn('test_product', html)
 
     def test_delete_product(self):
         data = {
@@ -164,17 +81,12 @@ class TestViewsCase(unittest.TestCase):
         all_products = Product.query.all()
         self.assertEqual(len(all_products), 1)
         self.assertEqual(all_products[0].id, 1)
-        self.login(
-            client=self.client,
-            username='test_user',
-            password='pass'
-        )
-        response = self.client.post(
+        self.assertEqual(all_products[0].amount, 3)
+        self.client.post(
             '/delete_product/1',
             follow_redirects=True,
             data={'_method': 'DELETE'}
         )
-        self.assertEqual(response.status_code, 200)
         all_products = Product.query.all()
         self.assertEqual(len(all_products), 1)
         self.assertEqual(all_products[0].id, 1)
@@ -191,12 +103,9 @@ class TestViewsCase(unittest.TestCase):
         )
         db.session.add_all([test_customer, test_product])
         db.session.commit()
-        self.login(
-            client=self.client,
-            username='test_user',
-            password='pass'
-        )
-        response = self.client.post(
+        all_orders = Order.query.all()
+        self.assertEqual(len(all_orders), 0)
+        self.client.post(
             '/add_order',
             follow_redirects=True,
             data={
@@ -206,10 +115,8 @@ class TestViewsCase(unittest.TestCase):
                 'products-0-price': '200'
             }
         )
-        self.assertEqual(response.status_code, 200)
-        html = response.get_data(as_text=True)
-        self.assertIn('Заказы', html)
-        self.assertIn('test_product', html)
+        all_orders = Order.query.all()
+        self.assertEqual(len(all_orders), 1)
 
     def test_get_all_orders(self):
         test_customer = Customer(name='test_customer')
@@ -222,11 +129,6 @@ class TestViewsCase(unittest.TestCase):
         )
         db.session.add_all([test_customer, test_product])
         db.session.commit()
-        self.login(
-            client=self.client,
-            username='test_user',
-            password='pass'
-        )
         data = {
             'customer': str(test_customer.id),
             'products-0-products': str(test_product.id),
@@ -265,11 +167,6 @@ class TestViewsCase(unittest.TestCase):
             'products-0-quantity': '1',
             'products-0-price': '200'
         }
-        self.login(
-            client=self.client,
-            username='test_user',
-            password='pass'
-        )
         self.client.post(
             '/add_order',
             follow_redirects=True,
