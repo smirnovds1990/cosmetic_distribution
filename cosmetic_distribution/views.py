@@ -3,9 +3,8 @@ from datetime import datetime
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 from werkzeug.security import check_password_hash
-from werkzeug.exceptions import InternalServerError
 
-from . import create_app, login_manager
+from . import login_manager
 from .forms import CustomerForm, OrderForm, ProductForm
 from .models import Customer, Order, OrderProduct, Product, User
 from .services import (
